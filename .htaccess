@@ -1,0 +1,44 @@
+# =====================================================================
+#  AutoSOFT — Reescrita de URLs (Apache + mod_rewrite)
+# =====================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Se o site estiver numa subpasta, descomente a linha abaixo
+    # com o nome correto da subpasta (ex.: /autosoft/).
+    RewriteBase /autosoft/
+
+    # Não reescrever pedidos a ficheiros ou pastas que existem
+    # (assets, uploads, imagens, etc.)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Encaminhar tudo o resto para o front controller
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Bloquear acesso direto a ficheiros sensíveis
+<FilesMatch "^(config\.php|\.htaccess|.*\.sql)$">
+    Require all denied
+</FilesMatch>
+
+# Cache para assets estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                 "access plus 7 days"
+    ExpiresByType image/jpeg               "access plus 30 days"
+    ExpiresByType image/png                "access plus 30 days"
+    ExpiresByType image/webp               "access plus 30 days"
+    ExpiresByType image/svg+xml            "access plus 30 days"
+</IfModule>
+
+# Permitir upload de imagens maiores (se o PHP permitir)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 16M
+    php_value post_max_size 20M
+</IfModule>
+
+Options -Indexes
+DirectoryIndex index.php
