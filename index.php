@@ -69,6 +69,10 @@ try {
             page_sell();
             break;
 
+        case 'favoritos':
+            page_favorites();
+            break;
+
         case 'sobre':
             page_about();
             break;

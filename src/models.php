@@ -78,6 +78,11 @@ function find_vehicles(array $filters = []): array
         $like = '%' . $filters['search'] . '%';
         array_push($params, $like, $like, $like);
     }
+    if (!empty($filters['slugs']) && is_array($filters['slugs'])) {
+        $ph = implode(',', array_fill(0, count($filters['slugs']), '?'));
+        $where[] = "v.slug IN ($ph)";
+        foreach ($filters['slugs'] as $s) { $params[] = $s; }
+    }
 
     if ($where) {
         $sql .= ' WHERE ' . implode(' AND ', $where);

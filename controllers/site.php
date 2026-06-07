@@ -166,6 +166,19 @@ function page_about(): void
     render('about', ['title' => 'A AutoSOFT']);
 }
 
+function page_favorites(): void
+{
+    $raw = q('slugs');
+    $slugs = $raw === '' ? [] : array_values(array_filter(array_map('trim', explode(',', $raw))));
+    $vehicles = $slugs ? find_vehicles(['slugs' => $slugs]) : [];
+
+    render('favorites', [
+        'title'    => 'Favoritos — AutoSOFT',
+        'vehicles' => $vehicles,
+        'hasSlugs' => $raw !== '',
+    ]);
+}
+
 function page_not_found(): void
 {
     http_response_code(404);

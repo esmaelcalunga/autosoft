@@ -15,6 +15,9 @@ $lockCategory = $lockCategory ?? null;
     <aside class="filter-rail">
       <form method="get" action="<?= $lockBrand ? url('/marca/' . $lockBrand['slug']) : ($lockCategory ? url('/categoria/' . $lockCategory['slug']) : url('/estoque')) ?>">
         <div class="filter-title">Filtros</div>
+        <?php if (!empty($filters['search'])): ?>
+          <input type="hidden" name="q" value="<?= e($filters['search']) ?>">
+        <?php endif; ?>
 
         <?php if (!$lockBrand): ?>
         <div class="filter-group">
