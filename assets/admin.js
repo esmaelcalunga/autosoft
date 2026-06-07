@@ -95,13 +95,20 @@
         if (size) size.textContent = fmtSize(e.loaded) + ' / ' + fmtSize(e.total);
       });
       xhr.addEventListener('load', function () {
+        if (xhr.status >= 400) {
+          bar.style.background = 'var(--red-500)';
+          txt.textContent = 'Servidor devolveu erro ' + xhr.status;
+          if (size) size.textContent = '';
+          Array.prototype.forEach.call(form.querySelectorAll('button[type=submit]'), function (b) { b.disabled = false; });
+          return;
+        }
         bar.style.width = '100%';
-        txt.textContent = 'Concluído';
+        txt.textContent = 'Concluído — a recarregar...';
         var dest = xhr.responseURL || form.action;
         window.location.href = dest;
       });
       xhr.addEventListener('error', function () {
-        txt.textContent = 'Erro ao enviar — tente de novo.';
+        txt.textContent = 'Erro de rede — tente de novo.';
         bar.style.background = 'var(--red-500)';
         Array.prototype.forEach.call(form.querySelectorAll('button[type=submit]'), function (b) { b.disabled = false; });
       });
