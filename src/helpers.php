@@ -19,10 +19,13 @@ function url(string $path = ''): string
     return $base . '/' . ltrim($path, '/');
 }
 
-/** URL de um asset (css, imagem...). */
+/** URL de um asset (css, imagem...) com cache-busting via mtime. */
 function asset(string $path): string
 {
-    return url('assets/' . ltrim($path, '/'));
+    $rel = ltrim($path, '/');
+    $full = __DIR__ . '/../assets/' . $rel;
+    $ver = is_file($full) ? filemtime($full) : null;
+    return url('assets/' . $rel) . ($ver ? '?v=' . $ver : '');
 }
 
 /** URL de uma imagem carregada. */
