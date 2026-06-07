@@ -46,6 +46,11 @@ img,svg{display:block; max-width:100%;}
 button,input,select,textarea{font:inherit; color:inherit;}
 ::selection{background:var(--red-500); color:#fff;}
 
+/* --- Cursor (elegante, vermelho da marca) --------------------------- */
+html,body{cursor:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M3 2.2 L3 17 L7 13.4 L9.8 19.3 L12.4 18.1 L9.6 12.4 L17 12.4 Z' fill='%23DA1E2F' stroke='%23fff' stroke-width='1.1' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, default;}
+a,button,label,select,summary,[role=button],.btn,.fav-btn,.vcard,input[type=submit],input[type=button],input[type=reset]{cursor:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='5.5' fill='%23DA1E2F' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") 11 11, pointer;}
+input[type=text],input[type=search],input[type=email],input[type=number],input[type=password],input[type=tel],textarea{cursor:text;}
+
 .container{max-width:var(--container-max); margin:0 auto; padding-left:24px; padding-right:24px;}
 .section{padding-top:64px; padding-bottom:64px;}
 .narrow{max-width:760px;}
@@ -298,17 +303,17 @@ select:focus,input:focus,textarea:focus{outline:none; border-color:var(--accent)
   .trust-grid,.footer-grid,.about-stats{grid-template-columns:repeat(2,1fr);}
   .consign{grid-template-columns:1fr;}
 
-  .site-header{position:relative;}
   .header-burger{display:flex;}
   .main-nav{display:none; position:absolute; top:100%; left:0; right:0; background:#fff;
     flex-direction:column; gap:2px; padding:12px 16px 16px; border-bottom:1px solid var(--border-subtle);
     box-shadow:var(--shadow-md); z-index:20;}
   .main-nav.is-open{display:flex;}
   .main-nav a{padding:12px 14px; font-size:15px; border-radius:var(--radius-md);}
-  .header-search input{width:130px;}
+  .header-search input[type=search]{width:130px;}
 }
 @media (max-width:560px){
   .grid-3,.grid-4,.quick-search,.form-row,.spec-grid{grid-template-columns:1fr;}
   .hero-copy h1{font-size:36px;}
   .header-search{display:none;}
+  .header-fav{margin-left:auto;}
 }
