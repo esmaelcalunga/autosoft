@@ -152,17 +152,25 @@
   }
 
   function bindGallery() {
-    var main = document.getElementById('gallery-main-img');
+    var mainBox = document.getElementById('gallery-main-media');
     var counter = document.getElementById('gallery-counter-current');
     var thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
-    if (!main || thumbs.length === 0) return;
+    if (!mainBox || thumbs.length === 0) return;
     Array.prototype.forEach.call(thumbs, function (btn) {
       btn.addEventListener('click', function () {
         var src = btn.getAttribute('data-gallery-src');
+        var type = btn.getAttribute('data-gallery-type') || 'image';
         var idx = btn.getAttribute('data-gallery-index');
         if (!src) return;
-        main.src = src;
-        if (counter && idx) { counter.textContent = idx; }
+
+        var counterHtml = counter ? '<span class="gallery-counter"><span id="gallery-counter-current">' + idx + '</span> / ' + thumbs.length + '</span>' : '';
+        if (type === 'video') {
+          mainBox.innerHTML = '<video src="' + src + '" controls autoplay playsinline></video>' + counterHtml;
+        } else {
+          mainBox.innerHTML = '<img src="' + src + '" alt="">' + counterHtml;
+        }
+        counter = document.getElementById('gallery-counter-current');
+
         Array.prototype.forEach.call(thumbs, function (t) { t.classList.remove('is-active'); });
         btn.classList.add('is-active');
       });

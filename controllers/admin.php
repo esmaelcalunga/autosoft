@@ -194,7 +194,14 @@ function handle_image_uploads(int $vehicleId): void
     $dir = __DIR__ . '/../uploads';
     if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
 
-    $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    $allowed = [
+        'image/jpeg'      => 'jpg',
+        'image/png'       => 'png',
+        'image/webp'      => 'webp',
+        'video/mp4'       => 'mp4',
+        'video/webm'      => 'webm',
+        'video/quicktime' => 'mov',
+    ];
     $maxSort = (int) db()->query("SELECT COALESCE(MAX(sort),0) FROM vehicle_images WHERE vehicle_id=$vehicleId")->fetchColumn();
 
     foreach ($_FILES['images']['tmp_name'] as $i => $tmp) {

@@ -25,18 +25,27 @@ $specs = [
         <?php foreach ($badges as [$txt,$tone]): ?><span class="badge badge-<?= $tone ?>"><?= e($txt) ?></span><?php endforeach; ?>
       </div>
 
-      <?php if ($images): ?>
-        <div class="gallery-main" id="gallery-main">
-          <img src="<?= upload_url($images[0]['path']) ?>" alt="<?= e($v['brand_name'].' '.$v['model']) ?>" id="gallery-main-img">
+      <?php if ($images): $firstType = media_type($images[0]['path']); $firstUrl = upload_url($images[0]['path']); ?>
+        <div class="gallery-main" id="gallery-main-media">
+          <?php if ($firstType === 'video'): ?>
+            <video src="<?= e($firstUrl) ?>" controls preload="metadata" playsinline></video>
+          <?php else: ?>
+            <img src="<?= e($firstUrl) ?>" alt="<?= e($v['brand_name'].' '.$v['model']) ?>">
+          <?php endif; ?>
           <?php if (count($images) > 1): ?>
             <span class="gallery-counter"><span id="gallery-counter-current">1</span> / <?= count($images) ?></span>
           <?php endif; ?>
         </div>
         <?php if (count($images) > 1): ?>
         <div class="gallery-thumbs">
-          <?php foreach ($images as $i => $img): ?>
-            <button type="button" class="thumb<?= $i === 0 ? ' is-active' : '' ?>" data-gallery-src="<?= e(upload_url($img['path'])) ?>" data-gallery-index="<?= $i + 1 ?>" aria-label="Ver foto <?= $i + 1 ?>">
-              <img src="<?= upload_url($img['path']) ?>" alt="">
+          <?php foreach ($images as $i => $img): $t = media_type($img['path']); $u = upload_url($img['path']); ?>
+            <button type="button" class="thumb<?= $i === 0 ? ' is-active' : '' ?>" data-gallery-src="<?= e($u) ?>" data-gallery-type="<?= $t ?>" data-gallery-index="<?= $i + 1 ?>" aria-label="Ver media <?= $i + 1 ?>">
+              <?php if ($t === 'video'): ?>
+                <video src="<?= e($u) ?>" muted preload="metadata" playsinline></video>
+                <span class="thumb-play">▶</span>
+              <?php else: ?>
+                <img src="<?= e($u) ?>" alt="">
+              <?php endif; ?>
             </button>
           <?php endforeach; ?>
         </div>

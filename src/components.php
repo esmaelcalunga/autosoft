@@ -23,9 +23,15 @@ function vehicle_card(array $v): string
         $badges .= '<span class="badge ' . $tone . '">' . e($b) . '</span>';
     }
 
-    // Media: imagem real ou placeholder listrado
+    // Media: imagem, vídeo ou placeholder listrado
     if (!empty($v['cover'])) {
-        $media = '<img src="' . upload_url($v['cover']) . '" alt="' . $name . '" loading="lazy">';
+        $coverUrl = upload_url($v['cover']);
+        if (media_type($v['cover']) === 'video') {
+            $media = '<video src="' . $coverUrl . '" muted playsinline preload="metadata"></video>'
+                   . '<span class="vcard-video-tag">▶ Vídeo</span>';
+        } else {
+            $media = '<img src="' . $coverUrl . '" alt="' . $name . '" loading="lazy">';
+        }
     } else {
         $media = '<div class="ph-stripes"><svg viewBox="0 0 48 48" width="34" height="34">'
             . '<polygon points="4,39 11,39 19,9 12,9" fill="var(--ink-300)"/>'

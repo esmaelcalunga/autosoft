@@ -34,10 +34,12 @@
     ExpiresByType image/svg+xml            "access plus 30 days"
 </IfModule>
 
-# Permitir upload de imagens maiores (se o PHP permitir)
+# Permitir upload de imagens e vídeos
 <IfModule mod_php.c>
-    php_value upload_max_filesize 16M
-    php_value post_max_size 20M
+    php_value upload_max_filesize 128M
+    php_value post_max_size 150M
+    php_value max_execution_time 300
+    php_value max_input_time 300
 </IfModule>
 
 Options -Indexes

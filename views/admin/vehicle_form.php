@@ -128,11 +128,23 @@ $action = $isEdit ? url('/admin/viaturas/editar/'.$v['id']) : url('/admin/viatur
       </div>
       <p class="hint">A primeira imagem é a <strong>principal</strong> (capa). Use ★ para tornar outra principal.</p>
     <?php endif; ?>
-    <label class="field">Adicionar imagens (JPG, PNG, WEBP — pode escolher várias)
-      <input type="file" name="images[]" accept="image/*" multiple>
-    </label>
+    <div class="upload-zone" id="upload-zone">
+      <label class="field upload-label">
+        <span class="upload-label-title">Adicionar fotos ou vídeos</span>
+        <span class="upload-label-sub">JPG, PNG, WEBP, MP4, WEBM, MOV — pode escolher vários</span>
+        <input type="file" name="images[]" accept="image/*,video/*" multiple id="upload-input">
+      </label>
+      <div class="upload-previews" id="upload-previews" hidden></div>
+      <div class="upload-progress" id="upload-progress" hidden>
+        <div class="upload-progress-track"><div class="upload-progress-bar" id="upload-progress-bar"></div></div>
+        <div class="upload-progress-meta">
+          <span id="upload-progress-text">0%</span>
+          <span id="upload-progress-size"></span>
+        </div>
+      </div>
+    </div>
     <?php if (empty($images)): ?>
-      <p class="hint">A <strong>primeira</strong> imagem que enviar será a capa da viatura. As restantes ficam como secundárias na galeria pública.</p>
+      <p class="hint">A <strong>primeira</strong> media que enviar será a capa da viatura. As restantes ficam como secundárias na galeria pública.</p>
     <?php endif; ?>
   </div>
 

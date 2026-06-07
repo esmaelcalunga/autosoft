@@ -34,6 +34,13 @@ function upload_url(string $path): string
     return url('uploads/' . ltrim($path, '/'));
 }
 
+/** 'image' ou 'video' a partir do path. */
+function media_type(string $path): string
+{
+    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    return in_array($ext, ['mp4', 'webm', 'mov', 'ogg', 'ogv'], true) ? 'video' : 'image';
+}
+
 /** Formata um valor em Kwanza:  38500000 => "Kz 38.500.000". */
 function kz($value): string
 {

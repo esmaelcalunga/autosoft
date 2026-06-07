@@ -17,6 +17,7 @@ $nav = [
 <title><?= e($title ?? 'AutoSOFT Admin') ?></title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700;800&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="<?= asset('admin.css') ?>">
+<script src="<?= asset('admin.js') ?>" defer></script>
 </head>
 <body class="admin-body">
 <aside class="admin-sidebar">
