@@ -98,16 +98,28 @@
   }
 
   function initCursor() {
-    if (!window.matchMedia || !window.matchMedia('(pointer:fine)').matches) return;
+    var canFine = window.matchMedia && (
+      window.matchMedia('(any-pointer: fine)').matches ||
+      window.matchMedia('(pointer: fine)').matches
+    );
+    if (!canFine) return;
     var dot = document.getElementById('cursor-dot');
     var ring = document.getElementById('cursor-ring');
     if (!dot || !ring) return;
 
     var mx = -100, my = -100, rx = -100, ry = -100;
+    var visible = false;
     var hoverSel = 'a, button, .btn, .fav-btn, .vcard, .header-fav, .header-burger, [role=button], label, summary, select';
+
+    function activate() {
+      if (visible) return;
+      visible = true;
+      document.documentElement.classList.add('has-custom-cursor');
+    }
 
     window.addEventListener('mousemove', function (e) {
       mx = e.clientX; my = e.clientY;
+      activate();
     }, { passive: true });
 
     window.addEventListener('mousedown', function () { document.documentElement.classList.add('cursor-down'); });
@@ -123,11 +135,11 @@
         document.documentElement.classList.remove('cursor-hover');
       }
     });
-    document.addEventListener('mouseleave', function () {
+    document.documentElement.addEventListener('mouseleave', function () {
       dot.style.opacity = '0'; ring.style.opacity = '0';
     });
-    document.addEventListener('mouseenter', function () {
-      dot.style.opacity = '1'; ring.style.opacity = '1';
+    document.documentElement.addEventListener('mouseenter', function () {
+      dot.style.opacity = ''; ring.style.opacity = '';
     });
 
     (function tick() {
@@ -139,11 +151,30 @@
     })();
   }
 
+  function bindGallery() {
+    var main = document.getElementById('gallery-main-img');
+    var counter = document.getElementById('gallery-counter-current');
+    var thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
+    if (!main || thumbs.length === 0) return;
+    Array.prototype.forEach.call(thumbs, function (btn) {
+      btn.addEventListener('click', function () {
+        var src = btn.getAttribute('data-gallery-src');
+        var idx = btn.getAttribute('data-gallery-index');
+        if (!src) return;
+        main.src = src;
+        if (counter && idx) { counter.textContent = idx; }
+        Array.prototype.forEach.call(thumbs, function (t) { t.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+      });
+    });
+  }
+
   function init() {
     updateHeader();
     paintButtons();
     syncFavPage();
     bindBurger();
+    bindGallery();
     initCursor();
   }
 

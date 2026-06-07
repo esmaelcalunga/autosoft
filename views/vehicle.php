@@ -26,11 +26,18 @@ $specs = [
       </div>
 
       <?php if ($images): ?>
-        <div class="gallery-main"><img src="<?= upload_url($images[0]['path']) ?>" alt="<?= e($v['brand_name'].' '.$v['model']) ?>"></div>
+        <div class="gallery-main" id="gallery-main">
+          <img src="<?= upload_url($images[0]['path']) ?>" alt="<?= e($v['brand_name'].' '.$v['model']) ?>" id="gallery-main-img">
+          <?php if (count($images) > 1): ?>
+            <span class="gallery-counter"><span id="gallery-counter-current">1</span> / <?= count($images) ?></span>
+          <?php endif; ?>
+        </div>
         <?php if (count($images) > 1): ?>
         <div class="gallery-thumbs">
-          <?php foreach (array_slice($images,0,4) as $img): ?>
-            <div class="thumb"><img src="<?= upload_url($img['path']) ?>" alt=""></div>
+          <?php foreach ($images as $i => $img): ?>
+            <button type="button" class="thumb<?= $i === 0 ? ' is-active' : '' ?>" data-gallery-src="<?= e(upload_url($img['path'])) ?>" data-gallery-index="<?= $i + 1 ?>" aria-label="Ver foto <?= $i + 1 ?>">
+              <img src="<?= upload_url($img['path']) ?>" alt="">
+            </button>
           <?php endforeach; ?>
         </div>
         <?php endif; ?>

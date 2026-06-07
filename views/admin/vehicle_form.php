@@ -104,21 +104,36 @@ $action = $isEdit ? url('/admin/viaturas/editar/'.$v['id']) : url('/admin/viatur
   </div>
 
   <div class="panel form-panel">
-    <h3>Fotografias</h3>
+    <h3>Fotografias <?php if (!empty($images)): ?><span class="count-badge"><?= count($images) ?></span><?php endif; ?></h3>
     <?php if (!empty($images)): ?>
       <div class="img-grid">
-        <?php foreach ($images as $img): ?>
-          <div class="img-thumb">
+        <?php foreach ($images as $i => $img): $isMain = $i === 0; ?>
+          <div class="img-thumb<?= $isMain ? ' is-main' : '' ?>">
             <img src="<?= upload_url($img['path']) ?>" alt="">
-            <a class="img-del" href="<?= url('/admin/viaturas/imagem/eliminar/'.$img['id']) ?>" onclick="return confirm('Remover esta imagem?')">×</a>
+            <?php if ($isMain): ?><span class="img-main-badge">Principal</span><?php endif; ?>
+            <div class="img-actions">
+              <?php if (!$isMain): ?>
+                <form method="post" action="<?= url('/admin/viaturas/imagem/principal/'.$img['id']) ?>" class="inline-form">
+                  <?= csrf_field() ?>
+                  <button type="submit" class="img-act" title="Tornar principal">★</button>
+                </form>
+              <?php endif; ?>
+              <form method="post" action="<?= url('/admin/viaturas/imagem/eliminar/'.$img['id']) ?>" class="inline-form" onsubmit="return confirm('Remover esta imagem?')">
+                <?= csrf_field() ?>
+                <button type="submit" class="img-act img-act-del" title="Remover">×</button>
+              </form>
+            </div>
           </div>
         <?php endforeach; ?>
       </div>
+      <p class="hint">A primeira imagem é a <strong>principal</strong> (capa). Use ★ para tornar outra principal.</p>
     <?php endif; ?>
     <label class="field">Adicionar imagens (JPG, PNG, WEBP — pode escolher várias)
       <input type="file" name="images[]" accept="image/*" multiple>
     </label>
-    <p class="hint">As imagens são opcionais. Sem foto, o site mostra um placeholder "Foto da viatura".</p>
+    <?php if (empty($images)): ?>
+      <p class="hint">A <strong>primeira</strong> imagem que enviar será a capa da viatura. As restantes ficam como secundárias na galeria pública.</p>
+    <?php endif; ?>
   </div>
 
   <div class="form-actions">

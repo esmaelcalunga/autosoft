@@ -32,6 +32,7 @@ function admin_router(array $parts, string $method): void
             elseif ($sub === 'editar')  { admin_vehicle_form($method, (int)($parts[2] ?? 0)); }
             elseif ($sub === 'eliminar'){ admin_vehicle_delete((int)($parts[2] ?? 0)); }
             elseif ($sub === 'imagem' && ($parts[2] ?? '') === 'eliminar') { admin_image_delete((int)($parts[3] ?? 0)); }
+            elseif ($sub === 'imagem' && ($parts[2] ?? '') === 'principal') { admin_image_make_main((int)($parts[3] ?? 0)); }
             else { admin_vehicles_list(); }
             break;
 
@@ -171,7 +172,7 @@ function admin_vehicle_form(string $method, ?int $id): void
         handle_image_uploads($vehId);
 
         flash($id ? 'Viatura actualizada.' : 'Viatura criada.', 'success');
-        redirect('/admin/viaturas');
+        redirect('/admin/viaturas/editar/' . $vehId);
     }
 
     render_admin('vehicle_form', [
@@ -212,6 +213,7 @@ function handle_image_uploads(int $vehicleId): void
 
 function admin_image_delete(int $imgId): void
 {
+    csrf_check();
     $st = db()->prepare('SELECT * FROM vehicle_images WHERE id = ?');
     $st->execute([$imgId]);
     $img = $st->fetch();
@@ -219,6 +221,22 @@ function admin_image_delete(int $imgId): void
         @unlink(__DIR__ . '/../uploads/' . $img['path']);
         db()->prepare('DELETE FROM vehicle_images WHERE id = ?')->execute([$imgId]);
         flash('Imagem removida.', 'success');
+        redirect('/admin/viaturas/editar/' . $img['vehicle_id']);
+    }
+    redirect('/admin/viaturas');
+}
+
+function admin_image_make_main(int $imgId): void
+{
+    csrf_check();
+    $st = db()->prepare('SELECT * FROM vehicle_images WHERE id = ?');
+    $st->execute([$imgId]);
+    $img = $st->fetch();
+    if ($img) {
+        db()->prepare('UPDATE vehicle_images SET sort = sort + 1 WHERE vehicle_id = ?')
+            ->execute([$img['vehicle_id']]);
+        db()->prepare('UPDATE vehicle_images SET sort = 0 WHERE id = ?')->execute([$imgId]);
+        flash('Imagem definida como principal.', 'success');
         redirect('/admin/viaturas/editar/' . $img['vehicle_id']);
     }
     redirect('/admin/viaturas');
