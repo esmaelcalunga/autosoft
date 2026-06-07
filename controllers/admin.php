@@ -218,7 +218,8 @@ function handle_image_uploads(int $vehicleId): void
         return;
     }
     if (!is_writable($dir)) {
-        flash('A pasta uploads/ existe mas não tem permissão de escrita. Execute: chmod -R 775 uploads', 'error');
+        $owner = function_exists('posix_getpwuid') ? (posix_getpwuid(posix_geteuid())['name'] ?? '?') : '?';
+        flash("A pasta uploads/ existe mas o utilizador do PHP ({$owner}) não consegue escrever lá. Em dev local: chmod -R 777 uploads. Em produção: sudo chown -R {$owner} uploads && chmod -R 775 uploads", 'error');
         return;
     }
 
