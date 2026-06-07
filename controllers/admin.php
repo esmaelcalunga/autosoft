@@ -92,12 +92,16 @@ function admin_login(string $method): void
 /* --------------------------------------------------------------------- */
 function admin_dashboard(): void
 {
-    $recent = find_vehicles(['limit' => 6]);
     render_admin('dashboard', [
-        'title'  => 'Painel — AutoSOFT',
-        'active' => 'dashboard',
-        'counts' => admin_counts(),
-        'recent' => $recent,
+        'title'         => 'Painel — AutoSOFT',
+        'active'        => 'dashboard',
+        'counts'        => admin_counts(),
+        'recent'        => find_vehicles(['limit' => 6]),
+        'topViewed'     => admin_top_viewed(5),
+        'topFavorited'  => admin_top_favorited(5),
+        'statusBreak'   => admin_status_breakdown(),
+        'brandBreak'    => admin_brand_breakdown(),
+        'leadsSeries'   => admin_leads_last_30d(),
     ]);
 }
 
@@ -106,11 +110,21 @@ function admin_dashboard(): void
 /* --------------------------------------------------------------------- */
 function admin_vehicles_list(): void
 {
-    $vehicles = find_vehicles([]);
+    $search = q('q');
+    $sort   = q('ordenar', 'recent');
+    $sortMap = ['recent' => 'recent', 'price-desc' => 'price-desc', 'price-asc' => 'price-asc', 'views' => null, 'favorites' => null];
+    $filters = ['search' => $search];
+    if (isset($sortMap[$sort]) && $sortMap[$sort]) { $filters['sort'] = $sortMap[$sort]; }
+    $vehicles = find_vehicles($filters);
+    if ($sort === 'views' || $sort === 'favorites') {
+        usort($vehicles, function ($a, $b) use ($sort) { return ((int) $b[$sort]) - ((int) $a[$sort]); });
+    }
     render_admin('vehicles_list', [
         'title'    => 'Viaturas — AutoSOFT Admin',
         'active'   => 'viaturas',
         'vehicles' => $vehicles,
+        'search'   => $search,
+        'sort'     => $sort,
     ]);
 }
 

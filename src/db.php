@@ -25,5 +25,23 @@ function db(): PDO
             . '<br>Verifique as credenciais em <code>config.php</code> e se importou <code>database/schema.sql</code>.');
     }
 
+    ensure_schema($pdo);
     return $pdo;
+}
+
+/** Adiciona colunas em falta sem precisar de migração manual. */
+function ensure_schema(PDO $pdo): void
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    try {
+        $cols = $pdo->query("SHOW COLUMNS FROM vehicles")->fetchAll(PDO::FETCH_COLUMN);
+        if (!in_array('views', $cols, true)) {
+            $pdo->exec("ALTER TABLE vehicles ADD COLUMN views INT UNSIGNED NOT NULL DEFAULT 0");
+        }
+        if (!in_array('favorites', $cols, true)) {
+            $pdo->exec("ALTER TABLE vehicles ADD COLUMN favorites INT UNSIGNED NOT NULL DEFAULT 0");
+        }
+    } catch (Throwable $e) {}
 }

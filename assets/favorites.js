@@ -19,9 +19,16 @@
   function toggle(slug) {
     var list = read();
     var i = list.indexOf(slug);
-    if (i === -1) { list.push(slug); } else { list.splice(i, 1); }
+    var adding = i === -1;
+    if (adding) { list.push(slug); } else { list.splice(i, 1); }
     write(list);
-    return i === -1;
+    try {
+      if (window.fetch) {
+        fetch((window.AUTOSOFT_BASE || '') + '/api/fav/' + encodeURIComponent(slug) + '/' + (adding ? 'add' : 'remove'),
+          { method: 'POST', keepalive: true, credentials: 'same-origin' });
+      }
+    } catch (e) {}
+    return adding;
   }
 
   function updateHeader() {

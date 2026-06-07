@@ -141,5 +141,37 @@ function admin_counts(): array
         'brands'     => (int) db()->query('SELECT COUNT(*) FROM brands')->fetchColumn(),
         'categories' => (int) db()->query('SELECT COUNT(*) FROM categories')->fetchColumn(),
         'leads'      => (int) db()->query('SELECT COUNT(*) FROM leads WHERE is_read=0')->fetchColumn(),
+        'views'      => (int) db()->query('SELECT COALESCE(SUM(views),0) FROM vehicles')->fetchColumn(),
+        'favorites'  => (int) db()->query('SELECT COALESCE(SUM(favorites),0) FROM vehicles')->fetchColumn(),
+        'leads_total'=> (int) db()->query('SELECT COUNT(*) FROM leads')->fetchColumn(),
     ];
+}
+
+function admin_top_viewed(int $limit = 5): array
+{
+    return db()->query(vehicle_select_base() . ' ORDER BY v.views DESC LIMIT ' . (int)$limit)->fetchAll();
+}
+
+function admin_top_favorited(int $limit = 5): array
+{
+    return db()->query(vehicle_select_base() . ' ORDER BY v.favorites DESC LIMIT ' . (int)$limit)->fetchAll();
+}
+
+function admin_status_breakdown(): array
+{
+    return db()->query("SELECT status, COUNT(*) AS n FROM vehicles GROUP BY status")->fetchAll();
+}
+
+function admin_brand_breakdown(): array
+{
+    return db()->query("SELECT b.name, COUNT(v.id) AS n FROM brands b
+                        LEFT JOIN vehicles v ON v.brand_id = b.id
+                        GROUP BY b.id, b.name HAVING n > 0 ORDER BY n DESC LIMIT 10")->fetchAll();
+}
+
+function admin_leads_last_30d(): array
+{
+    return db()->query("SELECT DATE(created_at) AS d, COUNT(*) AS n FROM leads
+                        WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 29 DAY)
+                        GROUP BY DATE(created_at) ORDER BY d")->fetchAll();
 }

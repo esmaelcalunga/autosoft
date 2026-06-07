@@ -73,6 +73,15 @@ try {
             page_favorites();
             break;
 
+        case 'api':
+            if (($parts[1] ?? '') === 'fav' && !empty($parts[2]) && !empty($parts[3]) && $method === 'POST') {
+                api_favorite_toggle($parts[2], $parts[3]);
+            } else {
+                http_response_code(404);
+                echo '{"ok":false}';
+            }
+            break;
+
         case 'sobre':
             page_about();
             break;

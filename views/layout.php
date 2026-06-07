@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="<?= asset('site.css') ?>">
+<script>window.AUTOSOFT_BASE = <?= json_encode(rtrim($GLOBALS['CONFIG']['base_url'], '/')) ?>;</script>
 <script src="<?= asset('favorites.js') ?>" defer></script>
 </head>
 <body>

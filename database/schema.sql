@@ -83,6 +83,8 @@ CREATE TABLE `vehicles` (
   `description`  TEXT         DEFAULT NULL,
   `status`       ENUM('disponivel','reservado','vendido') NOT NULL DEFAULT 'disponivel',
   `featured`     TINYINT(1)   NOT NULL DEFAULT 0,
+  `views`        INT UNSIGNED NOT NULL DEFAULT 0,
+  `favorites`    INT UNSIGNED NOT NULL DEFAULT 0,
   `created_at`   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at`   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

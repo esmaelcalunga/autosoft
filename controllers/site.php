@@ -89,7 +89,14 @@ function page_vehicle(string $slug): void
     $v = vehicle_by_slug($slug);
     if (!$v) { page_not_found(); return; }
 
-    $images = vehicle_images((int) $v['id']);
+    $vid = (int) $v['id'];
+    if (empty($_SESSION['viewed'][$vid])) {
+        db()->prepare('UPDATE vehicles SET views = views + 1 WHERE id = ?')->execute([$vid]);
+        $_SESSION['viewed'][$vid] = true;
+        $v['views'] = (int) ($v['views'] ?? 0) + 1;
+    }
+
+    $images = vehicle_images($vid);
 
     // Relacionadas: mesma marca primeiro, depois preço próximo
     $related = find_vehicles([
@@ -164,6 +171,32 @@ function page_sell(): void
 function page_about(): void
 {
     render('about', ['title' => 'A AutoSOFT']);
+}
+
+function api_favorite_toggle(string $slug, string $action): void
+{
+    header('Content-Type: application/json');
+    $st = db()->prepare('SELECT id, favorites FROM vehicles WHERE slug = ? LIMIT 1');
+    $st->execute([$slug]);
+    $row = $st->fetch();
+    if (!$row) {
+        http_response_code(404);
+        echo json_encode(['ok' => false, 'error' => 'not_found']);
+        exit;
+    }
+    if ($action === 'add') {
+        db()->prepare('UPDATE vehicles SET favorites = favorites + 1 WHERE id = ?')->execute([$row['id']]);
+        $count = (int) $row['favorites'] + 1;
+    } elseif ($action === 'remove') {
+        db()->prepare('UPDATE vehicles SET favorites = GREATEST(favorites, 1) - 1 WHERE id = ?')->execute([$row['id']]);
+        $count = max(0, (int) $row['favorites'] - 1);
+    } else {
+        http_response_code(400);
+        echo json_encode(['ok' => false, 'error' => 'bad_action']);
+        exit;
+    }
+    echo json_encode(['ok' => true, 'favorites' => $count]);
+    exit;
 }
 
 function page_favorites(): void
