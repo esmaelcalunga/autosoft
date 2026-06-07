@@ -1,11 +1,34 @@
-<?php /* Contactos / leads — $leads */ ?>
-<div class="page-head"><h1>Contactos <span class="count-badge"><?= count($leads) ?></span></h1></div>
+<?php /* Contactos / leads — $page, $q, $sort, $dir */
+$leads = $page['items'];
+$ctx = ['q' => $q, 'sort' => $sort, 'dir' => $dir];
+?>
+<div class="page-head"><h1>Contactos <span class="count-badge"><?= $page['total'] ?></span></h1></div>
+
+<form class="admin-toolbar" method="get" action="<?= url('/admin/leads') ?>">
+  <div class="admin-search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="search" name="q" value="<?= e($q) ?>" placeholder="Pesquisar nome, telefone, viatura...">
+  </div>
+  <button class="btn btn-outline" type="submit">Procurar</button>
+  <?php if ($q): ?><a class="btn btn-ghost" href="<?= url('/admin/leads') ?>">Limpar</a><?php endif; ?>
+</form>
+
 <div class="panel">
+  <div class="table-scroll">
   <table class="data-table">
-    <thead><tr><th>Data</th><th>Nome</th><th>Telefone</th><th>Viatura</th><th>Mensagem</th><th></th></tr></thead>
+    <thead>
+      <tr>
+        <?= sort_th('Data',    'date',    $sort, $dir, $ctx) ?>
+        <?= sort_th('Nome',    'name',    $sort, $dir, $ctx) ?>
+        <th>Telefone</th>
+        <?= sort_th('Viatura', 'vehicle', $sort, $dir, $ctx) ?>
+        <th>Mensagem</th>
+        <th></th>
+      </tr>
+    </thead>
     <tbody>
       <?php if (!$leads): ?>
-        <tr><td colspan="6" class="empty-row">Ainda não há contactos.</td></tr>
+        <tr><td colspan="6" class="empty-row"><?= $q ? 'Sem resultados.' : 'Ainda não há contactos.' ?></td></tr>
       <?php endif; ?>
       <?php foreach ($leads as $l): ?>
       <tr>
@@ -23,4 +46,7 @@
       <?php endforeach; ?>
     </tbody>
   </table>
+  </div>
 </div>
+
+<?= pagination_html($page['page'], $page['pages'], $page['total'], $ctx) ?>

@@ -168,3 +168,69 @@ function parse_badges(?string $s): array
     }
     return array_values(array_filter(array_map('trim', explode(',', $s))));
 }
+
+/* ----- Tabelas admin: sort + paginação ------------------------------ */
+
+/** URL com sort/dir alternados para uma coluna; reset à página 1. */
+function sort_url(string $col, string $current, string $dir, array $params = []): string
+{
+    $newDir = ($current === $col && strtolower($dir) === 'asc') ? 'desc' : 'asc';
+    $params['sort'] = $col;
+    $params['dir']  = $newDir;
+    unset($params['page']);
+    return '?' . http_build_query($params);
+}
+
+/** ' ▲' / ' ▼' / ''. */
+function sort_arrow(string $col, string $current, string $dir): string
+{
+    if ($col !== $current) return '';
+    return strtolower($dir) === 'asc' ? ' ▲' : ' ▼';
+}
+
+/** <th> ordenável. */
+function sort_th(string $label, string $col, string $current, string $dir, array $params = [], string $cls = ''): string
+{
+    $url = sort_url($col, $current, $dir, $params);
+    $arr = sort_arrow($col, $current, $dir);
+    $active = $col === $current ? ' is-active' : '';
+    return '<th class="sort-th' . $active . ($cls ? ' ' . $cls : '') . '"><a href="' . e($url) . '">'
+         . e($label) . '<span class="sort-i">' . $arr . '</span></a></th>';
+}
+
+/** Bloco de paginação. */
+function pagination_html(int $page, int $pages, int $total, array $params = []): string
+{
+    if ($pages <= 1) {
+        return '<div class="pagination-info">' . $total . ' resultado(s)</div>';
+    }
+    $url = function ($p) use ($params) {
+        $params['page'] = $p;
+        return '?' . http_build_query($params);
+    };
+    $h = '<nav class="pagination"><div class="pagination-info">' . $total . ' resultado(s) · página ' . $page . ' / ' . $pages . '</div><div class="pagination-pages">';
+
+    $h .= $page > 1
+        ? '<a href="' . e($url($page - 1)) . '">‹ Anterior</a>'
+        : '<span class="page-disabled">‹ Anterior</span>';
+
+    $shown = array_unique(array_merge([1, 2], range(max(1, $page - 2), min($pages, $page + 2)), [$pages - 1, $pages]));
+    sort($shown);
+    $shown = array_values(array_filter($shown, fn($p) => $p >= 1 && $p <= $pages));
+
+    $prev = 0;
+    foreach ($shown as $p) {
+        if ($p - $prev > 1) { $h .= '<span class="page-gap">…</span>'; }
+        $h .= $p === $page
+            ? '<span class="page-current">' . $p . '</span>'
+            : '<a href="' . e($url($p)) . '">' . $p . '</a>';
+        $prev = $p;
+    }
+
+    $h .= $page < $pages
+        ? '<a href="' . e($url($page + 1)) . '">Seguinte ›</a>'
+        : '<span class="page-disabled">Seguinte ›</span>';
+
+    $h .= '</div></nav>';
+    return $h;
+}

@@ -57,7 +57,7 @@ for ($i = 29; $i >= 0; $i--) {
 
 <div class="dash-grid">
   <div class="panel">
-    <div class="panel-head"><h2>★ Mais visualizadas</h2><a class="btn btn-sm btn-outline" href="<?= url('/admin/viaturas?ordenar=views') ?>">Ver todas</a></div>
+    <div class="panel-head"><h2>★ Mais visualizadas</h2><a class="btn btn-sm btn-outline" href="<?= url('/admin/viaturas?sort=views&dir=desc') ?>">Ver todas</a></div>
     <table class="data-table">
       <thead><tr><th>Viatura</th><th class="num">Vistas</th><th></th></tr></thead>
       <tbody>
@@ -72,7 +72,7 @@ for ($i = 29; $i >= 0; $i--) {
     </table>
   </div>
   <div class="panel">
-    <div class="panel-head"><h2>❤ Mais favoritadas</h2><a class="btn btn-sm btn-outline" href="<?= url('/admin/viaturas?ordenar=favorites') ?>">Ver todas</a></div>
+    <div class="panel-head"><h2>❤ Mais favoritadas</h2><a class="btn btn-sm btn-outline" href="<?= url('/admin/viaturas?sort=favorites&dir=desc') ?>">Ver todas</a></div>
     <table class="data-table">
       <thead><tr><th>Viatura</th><th class="num">Favoritos</th><th></th></tr></thead>
       <tbody>
@@ -89,9 +89,31 @@ for ($i = 29; $i >= 0; $i--) {
 </div>
 
 <div class="panel">
+  <div class="panel-head"><h2>📞 Viaturas mais contactadas</h2><a class="btn btn-sm btn-outline" href="<?= url('/admin/viaturas?sort=contacts&dir=desc') ?>">Ver todas</a></div>
+  <table class="data-table">
+    <thead><tr><th>Viatura</th><th>Marca</th><th class="num">Contactos</th><th class="num">Vistas</th><th class="num">Favs</th><th></th></tr></thead>
+    <tbody>
+      <?php if (!$topContacted): ?>
+        <tr><td colspan="6" class="empty-row">Ainda nenhuma viatura recebeu contactos.</td></tr>
+      <?php endif; ?>
+      <?php foreach ($topContacted as $v): ?>
+        <tr>
+          <td><strong><?= e($v['model']) ?></strong><div class="muted"><?= e($v['version']) ?></div></td>
+          <td><?= e($v['brand_name']) ?></td>
+          <td class="mono num"><strong><?= (int)($v['contacts'] ?? 0) ?></strong></td>
+          <td class="mono num"><?= (int)($v['views'] ?? 0) ?></td>
+          <td class="mono num"><?= (int)($v['favorites'] ?? 0) ?></td>
+          <td class="row-actions"><a href="<?= url('/admin/viaturas/editar/'.$v['id']) ?>">Editar</a></td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
   <div class="panel-head"><h2>Últimas viaturas</h2><a class="btn btn-sm btn-outline" href="<?= url('/admin/viaturas') ?>">Ver todas</a></div>
   <table class="data-table">
-    <thead><tr><th>Viatura</th><th>Marca</th><th>Preço</th><th class="num">Vistas</th><th class="num">Favs</th><th>Estado</th><th></th></tr></thead>
+    <thead><tr><th>Viatura</th><th>Marca</th><th>Preço</th><th class="num">Vistas</th><th class="num">Favs</th><th class="num">Contactos</th><th>Estado</th><th></th></tr></thead>
     <tbody>
       <?php foreach ($recent as $v): ?>
       <tr>
@@ -100,6 +122,7 @@ for ($i = 29; $i >= 0; $i--) {
         <td class="mono"><?= e(kz($v['price'])) ?></td>
         <td class="mono num"><?= (int)($v['views'] ?? 0) ?></td>
         <td class="mono num"><?= (int)($v['favorites'] ?? 0) ?></td>
+        <td class="mono num"><?= (int)($v['contacts'] ?? 0) ?></td>
         <td><span class="pill pill-<?= e($v['status']) ?>"><?= e($v['status']) ?></span></td>
         <td class="row-actions"><a href="<?= url('/admin/viaturas/editar/'.$v['id']) ?>">Editar</a></td>
       </tr>

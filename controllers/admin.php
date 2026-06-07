@@ -99,6 +99,7 @@ function admin_dashboard(): void
         'recent'        => find_vehicles(['limit' => 6]),
         'topViewed'     => admin_top_viewed(5),
         'topFavorited'  => admin_top_favorited(5),
+        'topContacted'  => admin_top_contacted(5),
         'statusBreak'   => admin_status_breakdown(),
         'brandBreak'    => admin_brand_breakdown(),
         'leadsSeries'   => admin_leads_last_30d(),
@@ -110,21 +111,15 @@ function admin_dashboard(): void
 /* --------------------------------------------------------------------- */
 function admin_vehicles_list(): void
 {
-    $search = q('q');
-    $sort   = q('ordenar', 'recent');
-    $sortMap = ['recent' => 'recent', 'price-desc' => 'price-desc', 'price-asc' => 'price-asc', 'views' => null, 'favorites' => null];
-    $filters = ['search' => $search];
-    if (isset($sortMap[$sort]) && $sortMap[$sort]) { $filters['sort'] = $sortMap[$sort]; }
-    $vehicles = find_vehicles($filters);
-    if ($sort === 'views' || $sort === 'favorites') {
-        usort($vehicles, function ($a, $b) use ($sort) { return ((int) $b[$sort]) - ((int) $a[$sort]); });
-    }
+    $q     = q('q');
+    $sort  = q('sort', 'created');
+    $dir   = q('dir', 'desc');
+    $page  = (int) q('page', 1);
+    $p     = admin_vehicles_paginated($q, $sort, $dir, $page);
     render_admin('vehicles_list', [
-        'title'    => 'Viaturas — AutoSOFT Admin',
-        'active'   => 'viaturas',
-        'vehicles' => $vehicles,
-        'search'   => $search,
-        'sort'     => $sort,
+        'title'  => 'Viaturas — AutoSOFT Admin',
+        'active' => 'viaturas',
+        'page'   => $p, 'q' => $q, 'sort' => $sort, 'dir' => $dir,
     ]);
 }
 
@@ -349,10 +344,12 @@ function admin_brands(string $method): void
         }
         redirect('/admin/marcas');
     }
+    $q    = q('q'); $sort = q('sort', 'name'); $dir = q('dir', 'asc'); $page = (int) q('page', 1);
+    $p    = admin_brands_paginated($q, $sort, $dir, $page);
     render_admin('brands', [
         'title'  => 'Marcas — AutoSOFT Admin',
         'active' => 'marcas',
-        'brands' => db()->query('SELECT b.*, (SELECT COUNT(*) FROM vehicles v WHERE v.brand_id=b.id) AS n FROM brands b ORDER BY b.name')->fetchAll(),
+        'page'   => $p, 'q' => $q, 'sort' => $sort, 'dir' => $dir,
     ]);
 }
 
@@ -381,10 +378,12 @@ function admin_categories(string $method): void
         }
         redirect('/admin/categorias');
     }
+    $q = q('q'); $sort = q('sort', 'name'); $dir = q('dir', 'asc'); $page = (int) q('page', 1);
+    $p = admin_categories_paginated($q, $sort, $dir, $page);
     render_admin('categories', [
-        'title'      => 'Categorias — AutoSOFT Admin',
-        'active'     => 'categorias',
-        'categories' => db()->query('SELECT c.*, (SELECT COUNT(*) FROM vehicles v WHERE v.category_id=c.id) AS n FROM categories c ORDER BY c.name')->fetchAll(),
+        'title'  => 'Categorias — AutoSOFT Admin',
+        'active' => 'categorias',
+        'page'   => $p, 'q' => $q, 'sort' => $sort, 'dir' => $dir,
     ]);
 }
 
@@ -401,19 +400,13 @@ function admin_category_delete(int $id): void
 /* --------------------------------------------------------------------- */
 function admin_leads(): void
 {
-    // marcar todos como lidos ao abrir
     db()->query('UPDATE leads SET is_read=1 WHERE is_read=0');
-    $leads = db()->query(
-        'SELECT l.*, v.model, v.slug AS vehicle_slug, b.name AS brand_name
-         FROM leads l
-         LEFT JOIN vehicles v ON v.id = l.vehicle_id
-         LEFT JOIN brands b ON b.id = v.brand_id
-         ORDER BY l.created_at DESC'
-    )->fetchAll();
+    $q = q('q'); $sort = q('sort', 'date'); $dir = q('dir', 'desc'); $page = (int) q('page', 1);
+    $p = admin_leads_paginated($q, $sort, $dir, $page);
     render_admin('leads', [
         'title'  => 'Contactos — AutoSOFT Admin',
         'active' => 'leads',
-        'leads'  => $leads,
+        'page'   => $p, 'q' => $q, 'sort' => $sort, 'dir' => $dir,
     ]);
 }
 
