@@ -81,10 +81,27 @@
     }
   }
 
+  function bindBurger() {
+    var burger = document.getElementById('header-burger');
+    var nav = document.getElementById('main-nav');
+    if (!burger || !nav) return;
+    burger.addEventListener('click', function () {
+      var open = nav.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', function (ev) {
+      if (!nav.classList.contains('is-open')) return;
+      if (ev.target.closest('#main-nav') || ev.target.closest('#header-burger')) return;
+      nav.classList.remove('is-open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   function init() {
     updateHeader();
     paintButtons();
     syncFavPage();
+    bindBurger();
   }
 
   if (document.readyState === 'loading') {

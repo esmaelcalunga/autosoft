@@ -33,21 +33,23 @@ $links = [
         </text>
       </svg>
     </a>
-    <nav class="main-nav">
+    <nav class="main-nav" id="main-nav">
       <?php foreach ($links as [$id, $label, $href]): ?>
         <a href="<?= $href ?>" class="<?= $navActive === $id ? 'active' : '' ?>"><?= e($label) ?></a>
       <?php endforeach; ?>
     </nav>
     <form class="header-search" action="<?= url('/estoque') ?>" method="get" role="search">
-      <button type="submit" class="header-search-btn" aria-label="Pesquisar">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      </button>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input type="search" name="q" placeholder="Pesquisar viatura" value="<?= e(q('q')) ?>">
+      <button type="submit" class="visually-hidden" tabindex="-1" aria-hidden="true">Pesquisar</button>
     </form>
     <a class="header-fav" href="<?= url('/favoritos') ?>" id="header-fav" aria-label="Favoritos">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       <span class="fav-badge" id="fav-count">0</span>
     </a>
+    <button type="button" class="header-burger" id="header-burger" aria-label="Menu" aria-expanded="false" aria-controls="main-nav">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
