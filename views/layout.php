@@ -12,6 +12,8 @@
 <script src="<?= asset('favorites.js') ?>" defer></script>
 </head>
 <body>
+<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursor-ring" aria-hidden="true"><i class="cursor-ring-inner"></i></div>
 <?php
 $navActive = $navActive ?? '';
 $links = [

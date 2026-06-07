@@ -46,10 +46,33 @@ img,svg{display:block; max-width:100%;}
 button,input,select,textarea{font:inherit; color:inherit;}
 ::selection{background:var(--red-500); color:#fff;}
 
-/* --- Cursor (elegante, vermelho da marca) --------------------------- */
-html,body{cursor:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M3 2.2 L3 17 L7 13.4 L9.8 19.3 L12.4 18.1 L9.6 12.4 L17 12.4 Z' fill='%23DA1E2F' stroke='%23fff' stroke-width='1.1' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, default;}
-a,button,label,select,summary,[role=button],.btn,.fav-btn,.vcard,input[type=submit],input[type=button],input[type=reset]{cursor:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='5.5' fill='%23DA1E2F' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") 11 11, pointer;}
-input[type=text],input[type=search],input[type=email],input[type=number],input[type=password],input[type=tel],textarea{cursor:text;}
+/* --- Cursor custom (ponto + anel pulsante) -------------------------- */
+@media (pointer:fine){
+  html,body{cursor:none;}
+  a,button,label,select,summary,[role=button],.btn,.fav-btn,.vcard,.header-fav,.header-burger,
+  input[type=submit],input[type=button],input[type=reset]{cursor:none;}
+}
+.cursor-dot,.cursor-ring{position:fixed; top:0; left:0; pointer-events:none; z-index:9999;
+  transform:translate3d(-100px,-100px,0); will-change:transform; display:none;}
+@media (pointer:fine){ .cursor-dot,.cursor-ring{display:block;} }
+.cursor-dot{width:8px; height:8px; margin:-4px 0 0 -4px; background:var(--red-500);
+  border-radius:50%; box-shadow:0 0 10px rgba(218,30,47,.55); transition:transform .08s linear;}
+.cursor-ring{z-index:9998;}
+.cursor-ring-inner{display:block; width:36px; height:36px; margin:-18px 0 0 -18px;
+  border:1.5px solid var(--red-500); border-radius:50%;
+  animation:cursor-pulse 1.4s cubic-bezier(.22,.61,.36,1) infinite;}
+@keyframes cursor-pulse{
+  0%{transform:scale(.55); opacity:.9;}
+  70%{opacity:.15;}
+  100%{transform:scale(1.9); opacity:0;}
+}
+.cursor-hover .cursor-ring-inner{animation-play-state:paused; transform:scale(1.5);
+  background:rgba(218,30,47,.10); opacity:1; transition:transform .18s, background .18s, opacity .18s;}
+.cursor-hover .cursor-dot{transform-origin:center; box-shadow:0 0 14px rgba(218,30,47,.9);}
+.cursor-down .cursor-ring-inner{transform:scale(.9); opacity:.7;}
+@media (prefers-reduced-motion:reduce){
+  .cursor-ring-inner{animation:none; opacity:.45;}
+}
 
 .container{max-width:var(--container-max); margin:0 auto; padding-left:24px; padding-right:24px;}
 .section{padding-top:64px; padding-bottom:64px;}

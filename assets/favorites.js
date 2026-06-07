@@ -97,11 +97,54 @@
     });
   }
 
+  function initCursor() {
+    if (!window.matchMedia || !window.matchMedia('(pointer:fine)').matches) return;
+    var dot = document.getElementById('cursor-dot');
+    var ring = document.getElementById('cursor-ring');
+    if (!dot || !ring) return;
+
+    var mx = -100, my = -100, rx = -100, ry = -100;
+    var hoverSel = 'a, button, .btn, .fav-btn, .vcard, .header-fav, .header-burger, [role=button], label, summary, select';
+
+    window.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+    }, { passive: true });
+
+    window.addEventListener('mousedown', function () { document.documentElement.classList.add('cursor-down'); });
+    window.addEventListener('mouseup',   function () { document.documentElement.classList.remove('cursor-down'); });
+    document.addEventListener('mouseover', function (e) {
+      if (e.target.closest && e.target.closest(hoverSel)) {
+        document.documentElement.classList.add('cursor-hover');
+      }
+    });
+    document.addEventListener('mouseout', function (e) {
+      var to = e.relatedTarget;
+      if (!to || !(to.closest && to.closest(hoverSel))) {
+        document.documentElement.classList.remove('cursor-hover');
+      }
+    });
+    document.addEventListener('mouseleave', function () {
+      dot.style.opacity = '0'; ring.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', function () {
+      dot.style.opacity = '1'; ring.style.opacity = '1';
+    });
+
+    (function tick() {
+      rx += (mx - rx) * 0.22;
+      ry += (my - ry) * 0.22;
+      dot.style.transform  = 'translate3d(' + mx + 'px,' + my + 'px,0)';
+      ring.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
+      requestAnimationFrame(tick);
+    })();
+  }
+
   function init() {
     updateHeader();
     paintButtons();
     syncFavPage();
     bindBurger();
+    initCursor();
   }
 
   if (document.readyState === 'loading') {
