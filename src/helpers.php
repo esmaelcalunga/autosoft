@@ -89,7 +89,13 @@ function unique_slug(string $base, string $table, ?int $ignoreId = null): string
 /** Redireccionar e terminar. */
 function redirect(string $to): void
 {
-    header('Location: ' . (str_starts_with($to, 'http') ? $to : url($to)));
+    $url = str_starts_with($to, 'http') ? $to : url($to);
+    if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['redirect' => $url]);
+        exit;
+    }
+    header('Location: ' . $url);
     exit;
 }
 

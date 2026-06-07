@@ -97,7 +97,7 @@
       xhr.addEventListener('load', function () {
         if (xhr.status >= 400) {
           bar.style.background = 'var(--red-500)';
-          txt.textContent = 'Servidor devolveu erro ' + xhr.status;
+          txt.textContent = 'Servidor devolveu erro ' + xhr.status + ' — ' + (xhr.responseText || '').slice(0, 200);
           if (size) size.textContent = '';
           Array.prototype.forEach.call(form.querySelectorAll('button[type=submit]'), function (b) { b.disabled = false; });
           return;
@@ -105,6 +105,10 @@
         bar.style.width = '100%';
         txt.textContent = 'Concluído — a recarregar...';
         var dest = xhr.responseURL || form.action;
+        try {
+          var data = JSON.parse(xhr.responseText);
+          if (data && data.redirect) { dest = data.redirect; }
+        } catch (e) {}
         window.location.href = dest;
       });
       xhr.addEventListener('error', function () {
@@ -118,6 +122,7 @@
       });
 
       xhr.open('POST', form.action);
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       xhr.send(data);
     });
   }
